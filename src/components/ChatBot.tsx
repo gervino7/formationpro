@@ -18,7 +18,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "⚽ Salut ! Je suis votre assistant football ! Discutons de votre passion et je vous expliquerai comment transformer votre amour du foot en opportunité d'affaires rentable ! 🚀",
+      text: "🚀 Salut ! Je suis votre assistant entrepreneuriat ! Discutons de vos projets et je vous expliquerai comment créer votre activité génératrice de revenus avec peu de moyens ! 💼",
       isBot: true,
       timestamp: new Date()
     }
@@ -73,7 +73,7 @@ const ChatBot = () => {
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Désolé, je rencontre un problème technique. Mais parlons quand même de football ! ⚽ Savez-vous que le business du sport génère des milliards ? Notre formation vous montre comment créer votre activité dans ce domaine passionnant !",
+        text: "Désolé, je rencontre un problème technique. Mais parlons quand même d'entrepreneuriat ! 🚀 Savez-vous que créer son entreprise n'a jamais été aussi accessible ? Notre formation vous montre comment démarrer avec peu de moyens !",
         isBot: true,
         timestamp: new Date()
       };
@@ -115,7 +115,7 @@ const ChatBot = () => {
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary to-accent text-white rounded-t-lg">
           <div className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5" />
-            <span className="font-semibold">Assistant Football ⚽</span>
+            <span className="font-semibold">Assistant Entrepreneuriat 🚀</span>
           </div>
           <div className="flex gap-1">
             <Button
@@ -182,7 +182,7 @@ const ChatBot = () => {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Parlez-moi de football..."
+                  placeholder="Parlez-moi d'entrepreneuriat..."
                   className="flex-1"
                   disabled={isLoading}
                 />

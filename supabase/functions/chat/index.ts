@@ -13,46 +13,45 @@ serve(async (req) => {
 
   try {
     const { message } = await req.json()
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
+    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')
 
-    if (!OPENAI_API_KEY) {
-      throw new Error('OpenAI API key not configured')
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error('Anthropic API key not configured')
     }
 
-    const systemPrompt = `Tu es un assistant passionné de football qui aide les visiteurs d'une landing page pour une formation entrepreneuriale. Ton rôle est de:
+    const systemPrompt = `Tu es un assistant expert en entrepreneuriat qui aide les visiteurs d'une landing page pour une formation entrepreneuriale. Ton rôle est de:
 
-1. Discuter avec passion du football (équipes, joueurs, actualités, statistiques)
-2. Faire le lien entre la passion du football et les opportunités d'affaires
+1. Partager tes connaissances en entrepreneuriat (création d'entreprise, business models, marketing, finances)
+2. Motiver et inspirer les futurs entrepreneurs
 3. Inciter subtilement les visiteurs à s'inscrire à la formation "Créer son activité génératrice de revenus avec peu de moyens"
-4. Mettre en avant que le sport/football peut être une niche business rentable
+4. Mettre en avant les opportunités business et les success stories
 5. Encourager à remplir le formulaire pour obtenir plus d'informations
 
-Réponds toujours en français, sois enthousiaste, et utilise des émojis football ⚽. Garde tes réponses concises (max 100 mots) et termine souvent par une question pour relancer la conversation. N'hésite pas à mentionner des exemples concrets de business liés au football.`
+Réponds toujours en français, sois enthousiaste et motivant, utilise des émojis 🚀💼📈. Garde tes réponses concises (max 100 mots) et termine souvent par une question pour relancer la conversation. N'hésite pas à mentionner des exemples concrets de réussites entrepreneuriales.`
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'x-api-key': ANTHROPIC_API_KEY,
         'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
+        model: 'claude-3-5-haiku-20241022',
         max_tokens: 150,
-        temperature: 0.7,
+        messages: [
+          { role: 'user', content: `${systemPrompt}\n\nUser: ${message}` }
+        ]
       }),
     })
 
     const data = await response.json()
     
     if (!response.ok) {
-      throw new Error(data.error?.message || 'OpenAI API error')
+      throw new Error(data.error?.message || 'Anthropic API error')
     }
 
-    const botMessage = data.choices[0]?.message?.content || "Désolé, je n'ai pas pu traiter votre message. Mais parlons quand même de football ! ⚽"
+    const botMessage = data.content?.[0]?.text || "Désolé, je n'ai pas pu traiter votre message. Mais parlons quand même d'entrepreneuriat ! 🚀"
 
     return new Response(
       JSON.stringify({ message: botMessage }),
@@ -68,7 +67,7 @@ Réponds toujours en français, sois enthousiaste, et utilise des émojis footba
     console.error('Chat error:', error)
     return new Response(
       JSON.stringify({ 
-        message: "Une erreur s'est produite. Mais savez-vous que le business du football génère des milliards ? Notre formation vous montre comment créer votre activité dans ce domaine passionnant ! ⚽" 
+        message: "Une erreur s'est produite. Mais savez-vous que l'entrepreneuriat est accessible à tous ? Notre formation vous montre comment créer votre activité génératrice de revenus avec peu de moyens ! 🚀💼" 
       }),
       { 
         headers: { 
