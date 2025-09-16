@@ -103,11 +103,11 @@ const ChatBot = () => {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <Card className={cn(
-        "w-72 h-80 shadow-xl transition-all duration-300 bg-card/98 backdrop-blur-sm border-primary/20",
+        "w-72 h-80 shadow-xl transition-all duration-300 bg-card/98 backdrop-blur-sm border-primary/20 flex flex-col",
         isMinimized && "h-12"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b bg-gradient-to-r from-primary to-accent text-white rounded-t-lg">
+        <div className="flex items-center justify-between p-3 border-b bg-gradient-to-r from-primary to-accent text-white rounded-t-lg shrink-0">
           <div className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
             <span className="font-medium text-sm">Questions ? 🚀</span>
@@ -135,7 +135,7 @@ const ChatBot = () => {
         {!isMinimized && (
           <>
             {/* Messages */}
-            <div className="flex-1 p-3 overflow-y-auto max-h-60 space-y-2">
+            <div className="flex-1 p-3 overflow-y-auto space-y-2 min-h-0">
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -171,7 +171,7 @@ const ChatBot = () => {
             </div>
 
             {/* Input */}
-            <div className="p-3 border-t">
+            <div className="p-3 border-t shrink-0 mt-auto">
               <div className="flex gap-2">
                 <Input
                   value={inputValue}
