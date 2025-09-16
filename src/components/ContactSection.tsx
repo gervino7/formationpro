@@ -13,7 +13,8 @@ import {
   ArrowRight,
   Send,
   Users,
-  Loader2
+  Loader2,
+  Download
 } from "lucide-react";
 import { useState } from "react";
 
@@ -32,29 +33,44 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      // Call Eventbrite registration edge function
-      const { data, error } = await supabase.functions.invoke('eventbrite-registration', {
-        body: formData
+      // Générer et télécharger le ticket directement
+      const response = await fetch(`https://xtsfrlgyvmjtkxrjopay.supabase.co/functions/v1/generate-ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0c2ZybGd5dm1qdGt4cmpvcGF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NzU0OTUsImV4cCI6MjA3MzU1MTQ5NX0.PHGGXGIOKkXGalS2JXgrFCh6sYbeOBC-RD3qWLixQKw`,
+        },
+        body: JSON.stringify(formData)
       });
 
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors de la génération du ticket');
       }
 
-      if (data.success) {
-        toast({
-          title: "🎉 Inscription réussie !",
-          description: data.message || "Vous recevrez votre billet Eventbrite par email dans quelques minutes.",
-        });
-        setFormData({ name: '', email: '', phone: '', message: '' });
-      } else {
-        throw new Error(data.error || "Erreur lors de l'inscription");
-      }
+      // Télécharger le fichier PDF
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ticket-formation-${formData.name.replace(/\s+/g, '-')}-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "🎉 Inscription réussie !",
+        description: "Votre ticket a été généré et téléchargé. Conservez-le précieusement !",
+      });
+      
+      setFormData({ name: '', email: '', phone: '', message: '' });
+
     } catch (error) {
       console.error('Registration error:', error);
       toast({
         title: "Erreur lors de l'inscription",
-        description: "Une erreur s'est produite. Veuillez réessayer ou nous contacter directement.",
+        description: error.message || "Une erreur s'est produite. Veuillez réessayer.",
         variant: "destructive"
       });
     } finally {
@@ -147,12 +163,12 @@ const ContactSection = () => {
               
               <div className="mt-6 p-4 bg-accent/10 border border-accent/20 rounded-lg">
                 <div className="flex items-center gap-2 text-accent mb-2">
-                  <Send className="h-5 w-5" />
-                  <span className="font-semibold">Inscription automatique !</span>
+                  <Download className="h-5 w-5" />
+                  <span className="font-semibold">Ticket instantané !</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Votre billet Eventbrite sera généré automatiquement et envoyé par email 
-                  dès votre inscription validée.
+                  Votre ticket de formation sera généré et téléchargé automatiquement 
+                  dès votre inscription validée. Conservez-le précieusement !
                 </p>
               </div>
             </CardContent>
