@@ -31,6 +31,15 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20 flex flex-col justify-center min-h-screen">
         <div className="max-w-4xl mx-auto text-center">
+          {/* Logo CEFP-DA */}
+          <div className="mb-8 animate-zoom-in">
+            <img 
+              src="/cefp-da-logo.png" 
+              alt="CEFP-DA Logo" 
+              className="w-24 h-24 mx-auto mb-4 animate-glow-pulse"
+            />
+          </div>
+
           {/* Enhanced Badge */}
           <div className="inline-flex items-center gap-2 bg-accent/15 backdrop-blur-sm border-2 border-accent/30 text-accent-light px-8 py-3 rounded-full mb-8 animate-glow-pulse shadow-lg">
             <Star className="h-5 w-5 fill-current animate-spin-slow" />
