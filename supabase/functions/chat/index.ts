@@ -13,11 +13,13 @@ serve(async (req) => {
 
   try {
     const { message } = await req.json()
-    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
 
-    if (!ANTHROPIC_API_KEY) {
-      throw new Error('Anthropic API key not configured')
+    if (!OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured')
     }
+
+    console.log('Processing chat message:', message)
 
     const systemPrompt = `Tu es un assistant expert en entrepreneuriat qui aide les visiteurs d'une landing page pour une formation entrepreneuriale. Ton rôle est de:
 
@@ -29,29 +31,33 @@ serve(async (req) => {
 
 Réponds toujours en français, sois enthousiaste et motivant, utilise des émojis 🚀💼📈. Garde tes réponses concises (max 100 mots) et termine souvent par une question pour relancer la conversation. N'hésite pas à mentionner des exemples concrets de réussites entrepreneuriales.`
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': ANTHROPIC_API_KEY,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-3-5-haiku-20241022',
-        max_tokens: 150,
+        model: 'gpt-4o-mini',
         messages: [
-          { role: 'user', content: `${systemPrompt}\n\nUser: ${message}` }
-        ]
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: message }
+        ],
+        max_tokens: 150,
+        temperature: 0.8
       }),
     })
 
     const data = await response.json()
     
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Anthropic API error')
+      console.error('OpenAI API error:', data)
+      throw new Error(data.error?.message || 'OpenAI API error')
     }
 
-    const botMessage = data.content?.[0]?.text || "Désolé, je n'ai pas pu traiter votre message. Mais parlons quand même d'entrepreneuriat ! 🚀"
+    console.log('OpenAI response received:', data)
+
+    const botMessage = data.choices?.[0]?.message?.content || "Désolé, je n'ai pas pu traiter votre message. Mais parlons quand même d'entrepreneuriat ! 🚀"
 
     return new Response(
       JSON.stringify({ message: botMessage }),
