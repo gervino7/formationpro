@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Phone, 
   Mail, 
@@ -11,7 +12,8 @@ import {
   Clock, 
   ArrowRight,
   Send,
-  Users
+  Users,
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
 
@@ -23,15 +25,41 @@ const ContactSection = () => {
     phone: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    toast({
-      title: "Inscription reçue !",
-      description: "Nous vous contacterons dans les plus brefs délais pour confirmer votre place.",
-    });
-    setFormData({ name: '', email: '', phone: '', message: '' });
+    setIsSubmitting(true);
+
+    try {
+      // Call Eventbrite registration edge function
+      const { data, error } = await supabase.functions.invoke('eventbrite-registration', {
+        body: formData
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.success) {
+        toast({
+          title: "🎉 Inscription réussie !",
+          description: data.message || "Vous recevrez votre billet Eventbrite par email dans quelques minutes.",
+        });
+        setFormData({ name: '', email: '', phone: '', message: '' });
+      } else {
+        throw new Error(data.error || "Erreur lors de l'inscription");
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Erreur lors de l'inscription",
+        description: "Une erreur s'est produite. Veuillez réessayer ou nous contacter directement.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -107,20 +135,24 @@ const ContactSection = () => {
                     rows={4}
                   />
                 </div>
-                <Button type="submit" variant="cta" size="lg" className="w-full">
-                  <Send className="mr-2 h-5 w-5" />
-                  Envoyer ma demande d'inscription
+                <Button type="submit" variant="cta" size="lg" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    <Send className="mr-2 h-5 w-5" />
+                  )}
+                  {isSubmitting ? "Inscription en cours..." : "S'inscrire et recevoir mon billet"}
                 </Button>
               </form>
               
-              <div className="mt-6 p-4 bg-success/10 border border-success/20 rounded-lg">
-                <div className="flex items-center gap-2 text-success mb-2">
-                  <Users className="h-5 w-5" />
-                  <span className="font-semibold">Places limitées !</span>
+              <div className="mt-6 p-4 bg-accent/10 border border-accent/20 rounded-lg">
+                <div className="flex items-center gap-2 text-accent mb-2">
+                  <Send className="h-5 w-5" />
+                  <span className="font-semibold">Inscription automatique !</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Il ne reste que quelques places disponibles pour cette session. 
-                  Inscrivez-vous maintenant pour garantir votre participation.
+                  Votre billet Eventbrite sera généré automatiquement et envoyé par email 
+                  dès votre inscription validée.
                 </p>
               </div>
             </CardContent>
