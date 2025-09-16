@@ -103,7 +103,7 @@ const ChatBot = () => {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <Card className={cn(
-        "w-80 h-96 shadow-xl transition-all duration-300 bg-card/98 backdrop-blur-sm border-primary/20 flex flex-col",
+        "w-80 h-[28rem] shadow-xl transition-all duration-300 bg-card/98 backdrop-blur-sm border-primary/20 flex flex-col",
         isMinimized && "h-12"
       )}>
         {/* Header */}
