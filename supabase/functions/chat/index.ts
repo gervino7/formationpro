@@ -71,6 +71,9 @@ Réponds toujours en français, sois enthousiaste et motivant, utilise des émoj
 
   } catch (error) {
     console.error('Chat error:', error)
+    console.error('Error details:', error.message)
+    console.error('API Key present:', !!Deno.env.get('OPENAI_API_KEY'))
+    
     return new Response(
       JSON.stringify({ 
         message: "Une erreur s'est produite. Mais savez-vous que l'entrepreneuriat est accessible à tous ? Notre formation vous montre comment créer votre activité génératrice de revenus avec peu de moyens ! 🚀💼" 
