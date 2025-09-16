@@ -27,6 +27,21 @@ import {
 import { useState, useEffect } from "react";
 import QRCode from 'qrcode';
 
+// Déclaration de type pour le widget Eventbrite
+declare global {
+  interface Window {
+    EBWidgets?: {
+      createWidget: (config: {
+        widgetType: string;
+        eventId: string;
+        modal: boolean;
+        modalTriggerElementId: string;
+        onOrderComplete: () => void;
+      }) => void;
+    };
+  }
+}
+
 const ContactSection = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -38,7 +53,7 @@ const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
-  // Générer le QR code à l'affichage
+  // Générer le QR code et charger le script Eventbrite
   useEffect(() => {
     const generateQRCode = async () => {
       try {
@@ -62,8 +77,51 @@ Contact: +225 01 02 03 04 05`;
       }
     };
     
+    // Charger le script Eventbrite
+    const loadEventbriteScript = () => {
+      // Vérifier si le script n'est pas déjà chargé
+      if (document.querySelector('script[src*="eb_widgets.js"]')) {
+        initEventbriteWidget();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://www.eventbrite.com/static/widgets/eb_widgets.js';
+      script.onload = initEventbriteWidget;
+      document.head.appendChild(script);
+    };
+
+    const initEventbriteWidget = () => {
+      if (window.EBWidgets) {
+        const exampleCallback = function() {
+          console.log('Inscription Formationpro terminée!');
+          toast({
+            title: "🎉 Inscription confirmée !",
+            description: "Votre place pour Formationpro est réservée. Vous allez recevoir votre billet par email.",
+          });
+        };
+
+        window.EBWidgets.createWidget({
+          widgetType: 'checkout',
+          eventId: '1704574711849',
+          modal: true,
+          modalTriggerElementId: 'eventbrite-widget-modal-trigger-1704574711849',
+          onOrderComplete: exampleCallback
+        });
+      }
+    };
+    
     generateQRCode();
-  }, []);
+    loadEventbriteScript();
+
+    // Nettoyage au démontage du composant
+    return () => {
+      const existingScript = document.querySelector('script[src*="eb_widgets.js"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, [toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,41 +276,70 @@ Contact: +225 01 02 03 04 05`;
                   </div>
                 </div>
 
-                {/* Eventbrite Embedded Checkout */}
-                <div className="eventbrite-checkout-container">
-                  <div 
-                    id="eventbrite-widget-container-formationpro" 
-                    className="w-full min-h-[500px] rounded-xl overflow-hidden border-2 border-accent/20"
-                  >
-                    <iframe 
-                      src="https://www.eventbrite.com/checkout-external?eid=YOUR_EVENT_ID&ref=etckt" 
-                      frameBorder="0" 
-                      height="500" 
-                      width="100%" 
-                      scrolling="auto"
-                      className="rounded-xl"
-                      title="Eventbrite - Formationpro"
-                    />
-                  </div>
+                {/* Eventbrite Checkout Widget */}
+                <div className="eventbrite-checkout-container text-center space-y-6">
+                  {/* Noscript fallback pour le SEO */}
+                  <noscript>
+                    <a 
+                      href="https://www.eventbrite.fr/e/formationpro-tickets-1704574711849" 
+                      rel="noopener noreferrer" 
+                      target="_blank"
+                      className="inline-block bg-accent text-white px-8 py-4 rounded-xl font-bold hover:bg-accent-dark transition-colors"
+                    >
+                      Acheter des Billets sur Eventbrite
+                    </a>
+                  </noscript>
                   
-                  {/* Instructions pour obtenir l'Event ID */}
-                  <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-amber-100 rounded-full p-2">
-                        <MessageCircle className="h-5 w-5 text-amber-600" />
+                  {/* Description de l'événement */}
+                  <div className="bg-gradient-to-br from-accent/5 via-primary/5 to-success/5 border-2 border-accent/20 rounded-2xl p-6 mb-6">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                      <div className="bg-accent/20 rounded-full p-3">
+                        <Calendar className="h-6 w-6 text-accent" />
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-amber-800 mb-2">Configuration requise</h4>
-                        <p className="text-sm text-amber-700 mb-2">
-                          Pour activer le checkout Eventbrite, vous devez :
-                        </p>
-                        <ol className="text-sm text-amber-700 space-y-1 list-decimal list-inside">
-                          <li>Aller sur votre événement "Formationpro" sur Eventbrite</li>
-                          <li>Cliquer sur "Marketing" → "Embedded Checkout"</li>
-                          <li>Copier l'ID de l'événement et remplacer "YOUR_EVENT_ID" dans le code</li>
-                          <li>Ou copier le code d'intégration complet fourni par Eventbrite</li>
-                        </ol>
+                      <h3 className="text-2xl font-bold text-primary">Formationpro - Inscription Officielle</h3>
+                    </div>
+                    <p className="text-muted-foreground mb-4">
+                      Réservez votre place pour l'événement "Créer son activité génératrice de revenus avec peu de moyens"
+                    </p>
+                    <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-accent" />
+                        <span>15 Octobre 2025</span>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-accent" />
+                        <span>Centre CEFP-DA, Abidjan</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Gift className="h-4 w-4 text-accent" />
+                        <span>Gratuit</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bouton Eventbrite stylisé */}
+                  <button 
+                    id="eventbrite-widget-modal-trigger-1704574711849" 
+                    type="button"
+                    className="w-full h-16 text-lg font-bold bg-gradient-to-r from-accent via-accent-dark to-accent hover:from-accent-dark hover:to-accent transition-all duration-500 rounded-xl shadow-glow border-0 relative overflow-hidden group text-white"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <div className="relative z-10 flex items-center justify-center">
+                      <Zap className="mr-3 h-6 w-6 animate-pulse" />
+                      Réserver Ma Place - Formationpro
+                      <Sparkles className="ml-3 h-6 w-6 animate-pulse" />
+                    </div>
+                  </button>
+                  
+                  {/* Informations de sécurité */}
+                  <div className="flex justify-center items-center gap-4 text-xs text-muted-foreground mt-4">
+                    <div className="flex items-center gap-1">
+                      <Shield className="h-4 w-4 text-success" />
+                      <span>Sécurisé par Eventbrite</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <CheckCircle className="h-4 w-4 text-success" />
+                      <span>Confirmation instantanée</span>
                     </div>
                   </div>
                 </div>
