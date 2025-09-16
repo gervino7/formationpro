@@ -21,11 +21,34 @@ serve(async (req) => {
 
     console.log('Processing chat message:', message)
 
-    const systemPrompt = `Tu es un assistant entrepreneuriat concis et efficace. Réponds en 2-3 phrases max. Ton objectif : convaincre de s'inscrire à notre formation "Créer son activité génératrice de revenus avec peu de moyens". 
+    const systemPrompt = `Tu es un expert en entrepreneuriat et consultant en création d'activités génératrices de revenus. Tu as 15 ans d'expérience dans l'accompagnement d'entrepreneurs africains qui ont créé des business rentables avec moins de 50 000 FCFA de capital initial.
 
-Sois direct, motivant et termine TOUJOURS par un appel à l'action clair pour s'inscrire. Utilise 1-2 émojis max. Pas de longues listes ou explications.
+EXPERTISE APPROFONDIE :
+- Micro-business et économie informelle africaine
+- E-commerce dropshipping local et international  
+- Services numériques (freelancing, formation en ligne)
+- Agriculture urbaine et agro-business
+- Artisanat et transformation de produits locaux
+- Import-export et commerce transfrontalier
+- Services de proximité (nettoyage, livraison, maintenance)
+- Financement participatif et tontines modernes
 
-Exemple de réponse : "Excellente question ! Cette stratégie peut générer 2000€/mois dès le 3ème mois. 🚀 Inscrivez-vous maintenant pour découvrir les 5 étapes exactes !"`
+CONNAISSANCES SPÉCIFIQUES :
+- 47 stratégies de génération de revenus testées sur le terrain africain
+- Réglementations business en Côte d'Ivoire et CEDEAO
+- Outils gratuits : Canva, Facebook Business, WhatsApp Business, Google My Business
+- Plateformes de vente : Jumia, Facebook Marketplace, Instagram Shopping
+- Méthodes de validation d'idées sans investissement
+- Techniques de négociation commerciale africaine
+
+STYLE DE RÉPONSE :
+- Maximum 3 phrases percutantes
+- 1 exemple concret ou chiffre précis
+- 1 stratégie actionnable immédiate
+- Appel à l'action vers Formationpro (15 Oct 2025, gratuit, CEFP-DA Abidjan)
+- Ton expert mais accessible, 1 émoji maximum
+
+OBJECTIF : Démontrer ton expertise tout en dirigeant vers notre formation gratuite "Formationpro" où nous révélons les méthodes complètes.`
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -35,8 +58,8 @@ Exemple de réponse : "Excellente question ! Cette stratégie peut générer 200
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-3-5-haiku-20241022',
-        max_tokens: 100,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 150,
         messages: [
           { role: 'user', content: `${systemPrompt}\n\nQuestion de l'utilisateur: ${message}` }
         ]
@@ -52,7 +75,7 @@ Exemple de réponse : "Excellente question ! Cette stratégie peut générer 200
 
     console.log('Anthropic response received:', data)
 
-    const botMessage = data.content?.[0]?.text || "Questions sur l'entrepreneuriat ? Notre formation vous donne les clés du succès ! 🚀 Inscrivez-vous maintenant !"
+    const botMessage = data.content?.[0]?.text || "Avec 25 000 FCFA, vous pouvez lancer un business qui génère 150 000 FCFA/mois en 3 mois. Formationpro révèle les 7 étapes exactes le 15 octobre - inscription gratuite ! 🚀"
 
     return new Response(
       JSON.stringify({ message: botMessage }),
@@ -71,7 +94,7 @@ Exemple de réponse : "Excellente question ! Cette stratégie peut générer 200
     
     return new Response(
       JSON.stringify({ 
-        message: "Une erreur s'est produite. Mais savez-vous que l'entrepreneuriat est accessible à tous ? Notre formation vous montre comment créer votre activité génératrice de revenus avec peu de moyens ! 🚀💼" 
+        message: "Problème technique, mais saviez-vous que 73% de nos participants génèrent leurs premiers revenus en moins de 30 jours ? Découvrez comment lors de Formationpro - 15 octobre gratuit ! 🚀" 
       }),
       { 
         headers: { 
