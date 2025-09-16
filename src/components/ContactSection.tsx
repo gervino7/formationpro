@@ -226,9 +226,9 @@ Contact: +225 01 02 03 04 05`;
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Premium Registration Form */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-1">
             <Card className="shadow-elegant bg-white/95 backdrop-blur-sm border border-white/20 overflow-hidden">
               {/* Card Header with Gradient */}
               <CardHeader className="bg-gradient-to-r from-primary via-primary-light to-accent text-white text-center pb-8 relative">
@@ -290,7 +290,7 @@ Contact: +225 01 02 03 04 05`;
                     </a>
                   </noscript>
                   
-                  {/* Description de l'événement */}
+                  {/* Description de l'événement avec QR Code intégré */}
                   <div className="bg-gradient-to-br from-accent/5 via-primary/5 to-success/5 border-2 border-accent/20 rounded-2xl p-6 mb-6">
                     <div className="flex items-center justify-center gap-3 mb-4">
                       <div className="bg-accent/20 rounded-full p-3">
@@ -298,21 +298,47 @@ Contact: +225 01 02 03 04 05`;
                       </div>
                       <h3 className="text-2xl font-bold text-primary">Formationpro - Inscription Officielle</h3>
                     </div>
-                    <p className="text-muted-foreground mb-4">
-                      Réservez votre place pour l'événement "Créer son activité génératrice de revenus avec peu de moyens"
-                    </p>
-                    <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-accent" />
-                        <span>15 Octobre 2025</span>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                      {/* Informations de l'événement */}
+                      <div>
+                        <p className="text-muted-foreground mb-4">
+                          Réservez votre place pour l'événement "Créer son activité génératrice de revenus avec peu de moyens"
+                        </p>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-accent" />
+                            <span className="text-sm text-muted-foreground">15 Octobre 2025</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-accent" />
+                            <span className="text-sm text-muted-foreground">Centre CEFP-DA, Abidjan</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Gift className="h-4 w-4 text-accent" />
+                            <span className="text-sm text-muted-foreground">Gratuit</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-accent" />
-                        <span>Centre CEFP-DA, Abidjan</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Gift className="h-4 w-4 text-accent" />
-                        <span>Gratuit</span>
+                      
+                      {/* QR Code intégré */}
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          <QrCode className="h-5 w-5 text-accent" />
+                          <span className="text-sm font-semibold text-primary">Infos complètes</span>
+                        </div>
+                        {qrCodeUrl && (
+                          <div className="bg-white p-3 rounded-xl border-2 border-accent/20 inline-block shadow-sm hover:shadow-md transition-shadow">
+                            <img 
+                              src={qrCodeUrl} 
+                              alt="QR Code Formationpro" 
+                              className="w-24 h-24 mx-auto"
+                            />
+                          </div>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Scannez pour plus d'infos
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -372,35 +398,6 @@ Contact: +225 01 02 03 04 05`;
 
           {/* Enhanced Info Sidebar */}
           <div className="space-y-6">
-            {/* QR Code Premium Card */}
-            <Card className="shadow-elegant bg-gradient-to-br from-white via-accent/5 to-primary/5 border-2 border-accent/20 overflow-hidden">
-              <CardContent className="p-6 text-center">
-                <div className="bg-gradient-to-r from-accent to-primary rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 animate-glow-pulse">
-                  <QrCode className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-primary mb-3">
-                  QR Code Formationpro
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  Scannez pour accéder aux informations complètes de l'événement
-                </p>
-                
-                {qrCodeUrl && (
-                  <div className="bg-white p-4 rounded-xl border-2 border-accent/20 inline-block animate-zoom-in">
-                    <img 
-                      src={qrCodeUrl} 
-                      alt="QR Code Formationpro" 
-                      className="w-32 h-32 mx-auto"
-                    />
-                  </div>
-                )}
-                
-                <div className="mt-4 text-xs text-muted-foreground">
-                  Événement exclusif - Places limitées
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Contact Premium Card */}
             <Card className="shadow-elegant bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20">
               <CardContent className="p-6">
