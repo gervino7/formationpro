@@ -14,9 +14,18 @@ import {
   Send,
   Users,
   Loader2,
-  Download
+  Download,
+  Star,
+  Zap,
+  Shield,
+  CheckCircle,
+  Sparkles,
+  Calendar,
+  QrCode,
+  Gift
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import QRCode from 'qrcode';
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -27,6 +36,34 @@ const ContactSection = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+
+  // Générer le QR code à l'affichage
+  useEffect(() => {
+    const generateQRCode = async () => {
+      try {
+        const qrData = `Formationpro - CEFP-DA
+Événement: Créer son activité génératrice de revenus avec peu de moyens
+Date: 15 Octobre 2025
+Lieu: Centre CEFP-DA, Abidjan
+Contact: +225 01 02 03 04 05`;
+        
+        const qrCodeDataURL = await QRCode.toDataURL(qrData, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#1e3a8a', // primary color
+            light: '#ffffff'
+          }
+        });
+        setQrCodeUrl(qrCodeDataURL);
+      } catch (error) {
+        console.error('Erreur génération QR Code:', error);
+      }
+    };
+    
+    generateQRCode();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +90,7 @@ const ContactSection = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ticket-formation-${formData.name.replace(/\s+/g, '-')}-${Date.now()}.pdf`;
+      a.download = `ticket-formationpro-${formData.name.replace(/\s+/g, '-')}-${Date.now()}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -61,7 +98,7 @@ const ContactSection = () => {
 
       toast({
         title: "🎉 Inscription réussie !",
-        description: "Votre ticket a été généré et téléchargé. Conservez-le précieusement !",
+        description: "Votre ticket Formationpro a été généré et téléchargé. Conservez-le précieusement !",
       });
       
       setFormData({ name: '', email: '', phone: '', message: '' });
@@ -84,213 +121,428 @@ const ContactSection = () => {
 
   return (
     <section id="contact" className="py-20 bg-gradient-hero relative overflow-hidden">
+      {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary-dark/90 to-primary/95"></div>
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-accent/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary-light/30 rounded-full blur-3xl animate-pulse-soft"></div>
+      </div>
       
       <div className="relative z-10 container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Réservez Votre Place Maintenant
+        {/* Header Section with Enhanced Typography */}
+        <div className="text-center mb-16 animate-slide-up">
+          <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm border border-accent/30 rounded-full px-6 py-2 mb-6">
+            <Sparkles className="h-5 w-5 text-accent animate-pulse" />
+            <span className="text-accent font-semibold">Formationpro - Événement Exclusif</span>
+            <Sparkles className="h-5 w-5 text-accent animate-pulse" />
+          </div>
+          
+          <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            <span className="text-gradient bg-gradient-to-r from-white via-accent-light to-white bg-clip-text text-transparent">
+              Réservez Votre Place
+            </span>
+            <br />
+            <span className="text-accent animate-glow-pulse">Maintenant</span>
           </h2>
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-            Ne laissez pas passer cette opportunité unique de transformer votre avenir professionnel. 
-            Les places sont limitées et la demande est forte !
+          
+          <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto mb-8 leading-relaxed">
+            🚀 Ne laissez pas passer cette opportunité unique de transformer votre avenir professionnel. 
+            <br />
+            <span className="text-accent font-semibold">Les places sont limitées et la demande est forte !</span>
           </p>
+          
+          {/* Urgency Indicators */}
+          <div className="flex justify-center items-center gap-8 mt-8">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+              <Users className="h-5 w-5 text-accent" />
+              <span className="text-white font-semibold">25 places max</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+              <Calendar className="h-5 w-5 text-accent" />
+              <span className="text-white font-semibold">15 Oct 2025</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
+              <Gift className="h-5 w-5 text-accent" />
+              <span className="text-white font-semibold">Ticket gratuit</span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Contact Form */}
-          <Card className="shadow-elegant">
-            <CardHeader className="text-center pb-6">
-              <h3 className="text-2xl font-bold text-primary">
-                Formulaire d'inscription
-              </h3>
-              <p className="text-muted-foreground">
-                Remplissez ce formulaire et nous vous recontacterons rapidement
-              </p>
-            </CardHeader>
-            <CardContent className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Input
-                    name="name"
-                    placeholder="Votre nom complet *"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="h-12"
-                  />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {/* Premium Registration Form */}
+          <div className="lg:col-span-2">
+            <Card className="shadow-elegant bg-white/95 backdrop-blur-sm border border-white/20 overflow-hidden">
+              {/* Card Header with Gradient */}
+              <CardHeader className="bg-gradient-to-r from-primary via-primary-light to-accent text-white text-center pb-8 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-accent/5 to-primary/10 opacity-30"></div>
+                <div className="relative z-10">
+                  <div className="flex justify-center mb-4">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 border border-white/30">
+                      <Star className="h-8 w-8 text-accent animate-pulse" />
+                    </div>
+                  </div>
+                  <h3 className="text-3xl font-bold mb-2">
+                    Inscription Premium
+                  </h3>
+                  <p className="text-white/90 text-lg">
+                    Formationpro - Créez votre succès entrepreneurial
+                  </p>
+                  <div className="mt-4 flex justify-center">
+                    <div className="bg-accent/20 backdrop-blur-sm rounded-full px-4 py-1 border border-accent/30">
+                      <span className="text-accent font-semibold text-sm">✨ Accès VIP Garanti</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Input
-                    name="email"
-                    type="email"
-                    placeholder="Votre adresse email *"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="h-12"
-                  />
-                </div>
-                <div>
-                  <Input
-                    name="phone"
-                    type="tel"
-                    placeholder="Votre numéro de téléphone *"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className="h-12"
-                  />
-                </div>
-                <div>
-                  <Textarea
-                    name="message"
-                    placeholder="Parlez-nous de votre projet ou posez vos questions..."
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    rows={4}
-                  />
-                </div>
-                <Button type="submit" variant="cta" size="lg" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  ) : (
-                    <Send className="mr-2 h-5 w-5" />
-                  )}
-                  {isSubmitting ? "Inscription en cours..." : "S'inscrire et recevoir mon billet"}
-                </Button>
-              </form>
+              </CardHeader>
               
-              <div className="mt-6 p-4 bg-accent/10 border border-accent/20 rounded-lg">
-                <div className="flex items-center gap-2 text-accent mb-2">
-                  <Download className="h-5 w-5" />
-                  <span className="font-semibold">Ticket instantané !</span>
+              <CardContent className="p-8 relative">
+                {/* Success Badges */}
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="text-center">
+                    <div className="bg-success/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
+                      <CheckCircle className="h-6 w-6 text-success" />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-semibold">Validation Instantanée</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-accent/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
+                      <Download className="h-6 w-6 text-accent" />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-semibold">Ticket Immédiat</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
+                      <Shield className="h-6 w-6 text-primary" />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-semibold">Place Sécurisée</p>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Votre ticket de formation sera généré et téléchargé automatiquement 
-                  dès votre inscription validée. Conservez-le précieusement !
-                </p>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Contact Info */}
-          <div className="space-y-8">
-            <Card className="shadow-elegant">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-primary mb-6">
-                  Contactez-nous directement
-                </h3>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="relative group">
+                      <Input
+                        name="name"
+                        placeholder="Votre nom complet *"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        className="h-14 border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl pl-4 group-hover:border-accent/50"
+                      />
+                    </div>
+                    <div className="relative group">
+                      <Input
+                        name="email"
+                        type="email"
+                        placeholder="Votre adresse email *"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className="h-14 border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl pl-4 group-hover:border-accent/50"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="relative group">
+                    <Input
+                      name="phone"
+                      type="tel"
+                      placeholder="Votre numéro de téléphone *"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                      className="h-14 border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl pl-4 group-hover:border-accent/50"
+                    />
+                  </div>
+                  
+                  <div className="relative group">
+                    <Textarea
+                      name="message"
+                      placeholder="Parlez-nous de votre projet entrepreneurial ou posez vos questions..."
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      rows={4}
+                      className="border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl p-4 group-hover:border-accent/50 resize-none"
+                    />
+                  </div>
+                  
+                  {/* Premium CTA Button */}
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    className="w-full h-16 text-lg font-bold bg-gradient-to-r from-accent via-accent-dark to-accent hover:from-accent-dark hover:to-accent transition-all duration-500 rounded-xl shadow-glow border-0 relative overflow-hidden group"
+                    disabled={isSubmitting}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <div className="relative z-10 flex items-center justify-center">
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                          Inscription en cours...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="mr-3 h-6 w-6 animate-pulse" />
+                          S'inscrire à Formationpro - Ticket Gratuit
+                          <Sparkles className="ml-3 h-6 w-6 animate-pulse" />
+                        </>
+                      )}
+                    </div>
+                  </Button>
+                </form>
                 
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-accent/10 rounded-full p-3">
-                      <Phone className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-primary">Téléphone</h4>
-                      <p className="text-muted-foreground">+225 01 02 03 04 05</p>
-                    </div>
+                {/* Premium Features Box */}
+                <div className="mt-8 p-6 bg-gradient-to-br from-accent/5 via-primary/5 to-success/5 border-2 border-accent/20 rounded-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 bg-accent text-white px-3 py-1 rounded-bl-lg text-xs font-bold">
+                    ⚡ INSTANTANÉ
                   </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="bg-accent/10 rounded-full p-3">
-                      <MessageCircle className="h-6 w-6 text-accent" />
+                  <div className="flex items-start gap-4">
+                    <div className="bg-accent/20 rounded-full p-3 animate-bounce-soft">
+                      <Download className="h-6 w-6 text-accent" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-primary">WhatsApp</h4>
-                      <p className="text-muted-foreground">+225 07 08 09 10 11</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="bg-accent/10 rounded-full p-3">
-                      <Mail className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-primary">Email</h4>
-                      <p className="text-muted-foreground">contact@cefp-da.com</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="bg-accent/10 rounded-full p-3">
-                      <MapPin className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-primary">Adresse</h4>
-                      <p className="text-muted-foreground">
-                        Centre CEFP-DA<br />
-                        Abidjan, Côte d'Ivoire
+                      <h4 className="font-bold text-lg text-primary mb-2">🎯 Ticket Premium Formationpro</h4>
+                      <p className="text-muted-foreground mb-3">
+                        Votre billet de formation sera généré automatiquement avec QR code de sécurité et téléchargé immédiatement après validation.
                       </p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="bg-success/10 text-success px-3 py-1 rounded-full text-xs font-semibold">✓ Validation Instantanée</span>
+                        <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-semibold">✓ QR Code Intégré</span>
+                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">✓ Place Garantie</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
+          </div>
 
-            <Card className="shadow-elegant">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-primary mb-6">
-                  Informations pratiques
+          {/* Enhanced Info Sidebar */}
+          <div className="space-y-6">
+            {/* QR Code Premium Card */}
+            <Card className="shadow-elegant bg-gradient-to-br from-white via-accent/5 to-primary/5 border-2 border-accent/20 overflow-hidden">
+              <CardContent className="p-6 text-center">
+                <div className="bg-gradient-to-r from-accent to-primary rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 animate-glow-pulse">
+                  <QrCode className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-3">
+                  QR Code Formationpro
                 </h3>
+                <p className="text-muted-foreground mb-4 text-sm">
+                  Scannez pour accéder aux informations complètes de l'événement
+                </p>
+                
+                {qrCodeUrl && (
+                  <div className="bg-white p-4 rounded-xl border-2 border-accent/20 inline-block animate-zoom-in">
+                    <img 
+                      src={qrCodeUrl} 
+                      alt="QR Code Formationpro" 
+                      className="w-32 h-32 mx-auto"
+                    />
+                  </div>
+                )}
+                
+                <div className="mt-4 text-xs text-muted-foreground">
+                  Événement exclusif - Places limitées
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact Premium Card */}
+            <Card className="shadow-elegant bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <div className="bg-primary rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                    <Phone className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-primary">
+                    Support VIP
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Assistance dédiée pour les participants
+                  </p>
+                </div>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-accent" />
-                    <div>
-                      <h4 className="font-semibold">Date de formation</h4>
-                      <p className="text-muted-foreground">15 Octobre 2025</p>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-5 w-5 text-accent" />
+                      <div>
+                        <h4 className="font-semibold text-primary text-sm">Hotline</h4>
+                        <p className="text-muted-foreground text-sm">+225 01 02 03 04 05</p>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-accent" />
-                    <div>
-                      <h4 className="font-semibold">Durée</h4>
-                      <p className="text-muted-foreground">2 jours intensifs (16h)</p>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div className="flex items-center gap-3">
+                      <MessageCircle className="h-5 w-5 text-accent" />
+                      <div>
+                        <h4 className="font-semibold text-primary text-sm">WhatsApp VIP</h4>
+                        <p className="text-muted-foreground text-sm">+225 07 08 09 10 11</p>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-3">
-                    <Users className="h-5 w-5 text-accent" />
-                    <div>
-                      <h4 className="font-semibold">Groupe</h4>
-                      <p className="text-muted-foreground">Maximum 25 participants</p>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div className="flex items-center gap-3">
+                      <Mail className="h-5 w-5 text-accent" />
+                      <div>
+                        <h4 className="font-semibold text-primary text-sm">Email</h4>
+                        <p className="text-muted-foreground text-sm">contact@cefp-da.com</p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-border">
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="w-full"
-                    onClick={() => window.open('https://wa.me/2250708091011', '_blank')}
-                  >
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    Contacter via WhatsApp
-                  </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full mt-6 border-2 border-accent/30 hover:bg-accent hover:text-white transition-all duration-300"
+                  onClick={() => window.open('https://wa.me/2250708091011', '_blank')}
+                >
+                  <MessageCircle className="mr-2 h-5 w-5" />
+                  Contact WhatsApp
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Event Details Premium */}
+            <Card className="shadow-elegant bg-gradient-to-br from-success/5 to-primary/5 border border-success/20">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <div className="bg-success rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                    <Calendar className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-primary">
+                    Détails Formationpro
+                  </h3>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Clock className="h-5 w-5 text-accent" />
+                        <span className="font-semibold text-sm">Date</span>
+                      </div>
+                      <span className="text-primary font-bold">15 Oct 2025</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Clock className="h-5 w-5 text-accent" />
+                        <span className="font-semibold text-sm">Durée</span>
+                      </div>
+                      <span className="text-primary font-bold">2 jours (16h)</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Users className="h-5 w-5 text-accent" />
+                        <span className="font-semibold text-sm">Places</span>
+                      </div>
+                      <span className="text-accent font-bold">Max 25</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                    <div className="flex items-center gap-3">
+                      <MapPin className="h-5 w-5 text-accent" />
+                      <div>
+                        <span className="font-semibold text-sm block">Centre CEFP-DA</span>
+                        <span className="text-muted-foreground text-xs">Abidjan, Côte d'Ivoire</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Urgency Banner */}
+                <div className="mt-6 p-4 bg-gradient-to-r from-accent/20 to-primary/20 border border-accent/30 rounded-xl text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Zap className="h-5 w-5 text-accent animate-pulse" />
+                    <span className="font-bold text-primary">Action Limitée</span>
+                    <Zap className="h-5 w-5 text-accent animate-pulse" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Inscription gratuite - Places limitées
+                  </p>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Final CTA */}
-        <div className="text-center mt-16">
-          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Prêt à changer votre vie ?
-            </h3>
-            <p className="text-gray-200 mb-6">
-              Rejoignez les centaines d'entrepreneurs qui ont transformé leur avenir 
-              avec CEFP-DA. Votre succès commence maintenant !
-            </p>
-            <Button variant="cta" size="xl" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
-              Je réserve ma place immédiatement
-              <ArrowRight className="ml-2 h-6 w-6" />
-            </Button>
+        {/* Epic Final CTA */}
+        <div className="text-center mt-20 animate-slide-up">
+          <div className="relative max-w-4xl mx-auto">
+            {/* Background Effects */}
+            <div className="absolute inset-0 bg-gradient-to-r from-accent/20 via-primary/20 to-accent/20 blur-3xl rounded-full"></div>
+            
+            <div className="relative bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-3xl p-12 shadow-glow overflow-hidden">
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-accent/5 to-primary/5 animate-float"></div>
+              
+              <div className="relative z-10">
+                <div className="flex justify-center mb-6">
+                  <div className="bg-accent/20 backdrop-blur-sm rounded-full p-6 border border-accent/30 animate-glow-pulse">
+                    <Sparkles className="h-12 w-12 text-accent animate-spin-slow" />
+                  </div>
+                </div>
+                
+                <h3 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                  <span className="text-gradient bg-gradient-to-r from-white via-accent to-white bg-clip-text text-transparent">
+                    Prêt à Révolutionner
+                  </span>
+                  <br />
+                  <span className="text-accent">Votre Avenir ?</span>
+                </h3>
+                
+                <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed max-w-3xl mx-auto">
+                  🚀 Rejoignez les <span className="text-accent font-bold">centaines d'entrepreneurs</span> qui ont transformé leur avenir avec 
+                  <span className="text-white font-bold"> Formationpro CEFP-DA</span>. 
+                  <br />
+                  <span className="text-accent font-bold text-2xl">Votre succès commence MAINTENANT !</span>
+                </p>
+                
+                {/* Stats Row */}
+                <div className="flex justify-center items-center gap-8 mb-10">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-accent mb-1">500+</div>
+                    <div className="text-sm text-white/80">Entrepreneurs formés</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white mb-1">95%</div>
+                    <div className="text-sm text-white/80">Taux de réussite</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-accent mb-1">2 jours</div>
+                    <div className="text-sm text-white/80">Pour changer sa vie</div>
+                  </div>
+                </div>
+                
+                <Button 
+                  size="xl" 
+                  className="h-20 px-12 text-xl font-bold bg-gradient-to-r from-accent via-accent-dark to-accent hover:from-accent-dark hover:to-accent transition-all duration-500 rounded-2xl shadow-glow border-0 relative overflow-hidden group animate-glow-pulse"
+                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                  <div className="relative z-10 flex items-center">
+                    <Zap className="mr-4 h-8 w-8 animate-pulse" />
+                    JE RÉSERVE MA PLACE FORMATIONPRO MAINTENANT
+                    <ArrowRight className="ml-4 h-8 w-8 animate-bounce-soft" />
+                  </div>
+                </Button>
+                
+                <p className="mt-6 text-white/70 text-sm">
+                  ⚡ Inscription 100% gratuite • 🎯 Places limitées à 25 • 🚀 Validation instantanée
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

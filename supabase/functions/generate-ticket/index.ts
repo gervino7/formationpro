@@ -149,8 +149,8 @@ function generateTicketHTML(registrationData: RegistrationData, ticketId: string
 <body>
   <div class="ticket">
     <div class="header">
-      <div class="logo">🎓 CEFP-DA</div>
-      <h1 class="title">BILLET DE FORMATION</h1>
+      <div class="logo">🎓 FORMATIONPRO - CEFP-DA</div>
+      <h1 class="title">BILLET DE FORMATION PREMIUM</h1>
       <p class="subtitle">Créer son activité génératrice de revenus avec peu de moyens</p>
     </div>
     
@@ -269,7 +269,7 @@ stream
 BT
 /F2 28 Tf
 50 780 Td
-(🎓 CEFP-DA - BILLET DE FORMATION) Tj
+(🎓 FORMATIONPRO - CEFP-DA - BILLET PREMIUM) Tj
 0 -40 Td
 /F1 20 Tf
 (Créer son activité génératrice de revenus avec peu de moyens) Tj
