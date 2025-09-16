@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { MessageCircle, Send, X, Minimize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
@@ -50,21 +51,15 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: inputValue }),
+      const { data, error } = await supabase.functions.invoke('chat', {
+        body: { message: inputValue }
       });
 
-      if (!response.ok) throw new Error('Erreur réseau');
-
-      const data = await response.json();
+      if (error) throw error;
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.message,
+        text: data.message || "Désolé, je n'ai pas pu traiter votre message.",
         isBot: true,
         timestamp: new Date()
       };
