@@ -19,7 +19,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "🚀 Salut ! Je suis votre assistant entrepreneuriat ! Discutons de vos projets et je vous expliquerai comment créer votre activité génératrice de revenus avec peu de moyens ! 💼",
+      text: "Une question sur l'entrepreneuriat ? 🚀 Découvrez comment créer votre activité rentable !",
       isBot: true,
       timestamp: new Date()
     }
@@ -68,7 +68,7 @@ const ChatBot = () => {
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Désolé, je rencontre un problème technique. Mais parlons quand même d'entrepreneuriat ! 🚀 Savez-vous que créer son entreprise n'a jamais été aussi accessible ? Notre formation vous montre comment démarrer avec peu de moyens !",
+        text: "Problème technique, mais notre formation entrepreneuriat reste disponible ! 🚀 Inscrivez-vous pour découvrir nos méthodes !",
         isBot: true,
         timestamp: new Date()
       };
@@ -87,30 +87,30 @@ const ChatBot = () => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-110"
-          size="lg"
+          className="h-12 w-12 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:scale-105"
+          size="sm"
         >
-          <MessageCircle className="h-6 w-6" />
+          <MessageCircle className="h-5 w-5" />
         </Button>
-        <div className="absolute -top-2 -right-2 h-4 w-4 bg-accent rounded-full animate-ping"></div>
+        <div className="absolute -top-1 -right-1 h-3 w-3 bg-accent rounded-full animate-ping"></div>
       </div>
     );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 z-50">
       <Card className={cn(
-        "w-80 h-96 shadow-2xl transition-all duration-300 bg-card/95 backdrop-blur-sm border-primary/20",
-        isMinimized && "h-14"
+        "w-72 h-80 shadow-xl transition-all duration-300 bg-card/98 backdrop-blur-sm border-primary/20",
+        isMinimized && "h-12"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary to-accent text-white rounded-t-lg">
+        <div className="flex items-center justify-between p-3 border-b bg-gradient-to-r from-primary to-accent text-white rounded-t-lg">
           <div className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5" />
-            <span className="font-semibold">Assistant Entrepreneuriat 🚀</span>
+            <MessageCircle className="h-4 w-4" />
+            <span className="font-medium text-sm">Questions ? 🚀</span>
           </div>
           <div className="flex gap-1">
             <Button
@@ -135,7 +135,7 @@ const ChatBot = () => {
         {!isMinimized && (
           <>
             {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto max-h-72 space-y-3">
+            <div className="flex-1 p-3 overflow-y-auto max-h-60 space-y-2">
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -146,7 +146,7 @@ const ChatBot = () => {
                 >
                   <div
                     className={cn(
-                      "max-w-[80%] p-3 rounded-lg text-sm",
+                      "max-w-[85%] p-2 rounded-lg text-xs",
                       message.isBot
                         ? "bg-muted text-foreground rounded-bl-sm"
                         : "bg-primary text-primary-foreground rounded-br-sm"
@@ -171,23 +171,23 @@ const ChatBot = () => {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t">
+            <div className="p-3 border-t">
               <div className="flex gap-2">
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Parlez-moi d'entrepreneuriat..."
-                  className="flex-1"
+                  placeholder="Votre question..."
+                  className="flex-1 text-xs"
                   disabled={isLoading}
                 />
                 <Button
                   onClick={sendMessage}
                   disabled={isLoading || !inputValue.trim()}
                   size="sm"
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-primary hover:bg-primary/90 px-2"
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-3 w-3" />
                 </Button>
               </div>
             </div>

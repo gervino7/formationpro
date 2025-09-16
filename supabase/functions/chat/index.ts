@@ -13,51 +13,46 @@ serve(async (req) => {
 
   try {
     const { message } = await req.json()
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
+    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY')
 
-    if (!OPENAI_API_KEY) {
-      throw new Error('OpenAI API key not configured')
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error('Anthropic API key not configured')
     }
 
     console.log('Processing chat message:', message)
 
-    const systemPrompt = `Tu es un assistant expert en entrepreneuriat qui aide les visiteurs d'une landing page pour une formation entrepreneuriale. Ton rôle est de:
+    const systemPrompt = `Tu es un assistant entrepreneuriat concis et efficace. Réponds en 2-3 phrases max. Ton objectif : convaincre de s'inscrire à notre formation "Créer son activité génératrice de revenus avec peu de moyens". 
 
-1. Partager tes connaissances en entrepreneuriat (création d'entreprise, business models, marketing, finances)
-2. Motiver et inspirer les futurs entrepreneurs
-3. Inciter subtilement les visiteurs à s'inscrire à la formation "Créer son activité génératrice de revenus avec peu de moyens"
-4. Mettre en avant les opportunités business et les success stories
-5. Encourager à remplir le formulaire pour obtenir plus d'informations
+Sois direct, motivant et termine TOUJOURS par un appel à l'action clair pour s'inscrire. Utilise 1-2 émojis max. Pas de longues listes ou explications.
 
-Réponds toujours en français, sois enthousiaste et motivant, utilise des émojis 🚀💼📈. Garde tes réponses concises (max 100 mots) et termine souvent par une question pour relancer la conversation. N'hésite pas à mentionner des exemples concrets de réussites entrepreneuriales.`
+Exemple de réponse : "Excellente question ! Cette stratégie peut générer 2000€/mois dès le 3ème mois. 🚀 Inscrivez-vous maintenant pour découvrir les 5 étapes exactes !"`
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'x-api-key': ANTHROPIC_API_KEY,
         'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 100,
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
-        max_tokens: 150,
-        temperature: 0.8
+          { role: 'user', content: `${systemPrompt}\n\nQuestion de l'utilisateur: ${message}` }
+        ]
       }),
     })
 
     const data = await response.json()
     
     if (!response.ok) {
-      console.error('OpenAI API error:', data)
-      throw new Error(data.error?.message || 'OpenAI API error')
+      console.error('Anthropic API error:', data)
+      throw new Error(data.error?.message || 'Anthropic API error')
     }
 
-    console.log('OpenAI response received:', data)
+    console.log('Anthropic response received:', data)
 
-    const botMessage = data.choices?.[0]?.message?.content || "Désolé, je n'ai pas pu traiter votre message. Mais parlons quand même d'entrepreneuriat ! 🚀"
+    const botMessage = data.content?.[0]?.text || "Questions sur l'entrepreneuriat ? Notre formation vous donne les clés du succès ! 🚀 Inscrivez-vous maintenant !"
 
     return new Response(
       JSON.stringify({ message: botMessage }),
@@ -72,7 +67,7 @@ Réponds toujours en français, sois enthousiaste et motivant, utilise des émoj
   } catch (error) {
     console.error('Chat error:', error)
     console.error('Error details:', error.message)
-    console.error('API Key present:', !!Deno.env.get('OPENAI_API_KEY'))
+    console.error('Anthropic API Key present:', !!Deno.env.get('ANTHROPIC_API_KEY'))
     
     return new Response(
       JSON.stringify({ 
