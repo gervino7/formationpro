@@ -218,78 +218,44 @@ Contact: +225 01 02 03 04 05`;
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="relative group">
-                      <Input
-                        name="name"
-                        placeholder="Votre nom complet *"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="h-14 border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl pl-4 group-hover:border-accent/50"
-                      />
-                    </div>
-                    <div className="relative group">
-                      <Input
-                        name="email"
-                        type="email"
-                        placeholder="Votre adresse email *"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="h-14 border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl pl-4 group-hover:border-accent/50"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="relative group">
-                    <Input
-                      name="phone"
-                      type="tel"
-                      placeholder="Votre numéro de téléphone *"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      required
-                      className="h-14 border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl pl-4 group-hover:border-accent/50"
-                    />
-                  </div>
-                  
-                  <div className="relative group">
-                    <Textarea
-                      name="message"
-                      placeholder="Parlez-nous de votre projet entrepreneurial ou posez vos questions..."
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      rows={4}
-                      className="border-2 border-gray-200 focus:border-accent transition-all duration-300 rounded-xl p-4 group-hover:border-accent/50 resize-none"
-                    />
-                  </div>
-                  
-                  {/* Premium CTA Button */}
-                  <Button 
-                    type="submit" 
-                    size="lg" 
-                    className="w-full h-16 text-lg font-bold bg-gradient-to-r from-accent via-accent-dark to-accent hover:from-accent-dark hover:to-accent transition-all duration-500 rounded-xl shadow-glow border-0 relative overflow-hidden group"
-                    disabled={isSubmitting}
+                {/* Eventbrite Embedded Checkout */}
+                <div className="eventbrite-checkout-container">
+                  <div 
+                    id="eventbrite-widget-container-formationpro" 
+                    className="w-full min-h-[500px] rounded-xl overflow-hidden border-2 border-accent/20"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    <div className="relative z-10 flex items-center justify-center">
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                          Inscription en cours...
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="mr-3 h-6 w-6 animate-pulse" />
-                          S'inscrire à Formationpro - Ticket Gratuit
-                          <Sparkles className="ml-3 h-6 w-6 animate-pulse" />
-                        </>
-                      )}
+                    <iframe 
+                      src="https://www.eventbrite.com/checkout-external?eid=YOUR_EVENT_ID&ref=etckt" 
+                      frameBorder="0" 
+                      height="500" 
+                      width="100%" 
+                      scrolling="auto"
+                      className="rounded-xl"
+                      title="Eventbrite - Formationpro"
+                    />
+                  </div>
+                  
+                  {/* Instructions pour obtenir l'Event ID */}
+                  <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-amber-100 rounded-full p-2">
+                        <MessageCircle className="h-5 w-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-amber-800 mb-2">Configuration requise</h4>
+                        <p className="text-sm text-amber-700 mb-2">
+                          Pour activer le checkout Eventbrite, vous devez :
+                        </p>
+                        <ol className="text-sm text-amber-700 space-y-1 list-decimal list-inside">
+                          <li>Aller sur votre événement "Formationpro" sur Eventbrite</li>
+                          <li>Cliquer sur "Marketing" → "Embedded Checkout"</li>
+                          <li>Copier l'ID de l'événement et remplacer "YOUR_EVENT_ID" dans le code</li>
+                          <li>Ou copier le code d'intégration complet fourni par Eventbrite</li>
+                        </ol>
+                      </div>
                     </div>
-                  </Button>
-                </form>
+                  </div>
+                </div>
                 
                 {/* Premium Features Box */}
                 <div className="mt-8 p-6 bg-gradient-to-br from-accent/5 via-primary/5 to-success/5 border-2 border-accent/20 rounded-2xl relative overflow-hidden">
