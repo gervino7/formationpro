@@ -1,9 +1,18 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+// Validation schema
+const registrationSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+  email: z.string().trim().email("Invalid email format").max(255, "Email must be less than 255 characters"),
+  phone: z.string().trim().regex(/^[\+]?[0-9\s\-\(\)]{8,20}$/, "Invalid phone format"),
+  message: z.string().trim().max(1000, "Message must be less than 1000 characters").optional(),
+})
 
 interface RegistrationData {
   name: string
@@ -19,9 +28,30 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { name, email, phone, message }: RegistrationData = await req.json()
+    const requestBody = await req.json()
     
-    console.log('Processing registration for:', { name, email, phone })
+    // Validate input with Zod
+    const validationResult = registrationSchema.safeParse(requestBody)
+    
+    if (!validationResult.success) {
+      console.error("Validation failed:", validationResult.error.issues)
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid input data",
+          details: validationResult.error.issues.map(i => i.message)
+        }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    const { name, email, phone, message }: RegistrationData = validationResult.data
+    
+    // Log with anonymized data (no PII)
+    const emailDomain = email.split('@')[1]
+    console.log(`Processing registration for domain: ${emailDomain}`)
 
     const eventbriteApiKey = Deno.env.get('EVENTBRITE_API_KEY')
     if (!eventbriteApiKey) {
@@ -41,7 +71,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    console.log('Creating attendee in Eventbrite:', attendeeData)
+    console.log('Creating attendee in Eventbrite')
 
     const eventbriteResponse = await fetch(
       `https://www.eventbriteapi.com/v3/events/${eventId}/attendees/`,
@@ -62,7 +92,7 @@ Deno.serve(async (req) => {
     }
 
     const attendeeResult = await eventbriteResponse.json()
-    console.log('Eventbrite registration successful:', attendeeResult)
+    console.log('Eventbrite registration successful')
 
     // Store registration in Supabase for tracking
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!

@@ -19,7 +19,8 @@ serve(async (req) => {
       throw new Error('Anthropic API key not configured')
     }
 
-    console.log('Processing chat message:', message)
+    // Log without full message content (privacy)
+    console.log(`Processing chat message (length: ${message?.length || 0} chars)`)
 
     const systemPrompt = `Tu es un expert en entrepreneuriat et consultant en création d'activités génératrices de revenus. Tu as 15 ans d'expérience dans l'accompagnement d'entrepreneurs africains qui ont créé des business rentables avec moins de 50 000 FCFA de capital initial.
 

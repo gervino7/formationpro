@@ -1,10 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+// Validation schema
+const registrationSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+  email: z.string().trim().email("Invalid email format").max(255, "Email must be less than 255 characters"),
+  phone: z.string().trim().regex(/^[\+]?[0-9\s\-\(\)]{8,20}$/, "Invalid phone format"),
+  message: z.string().trim().max(1000, "Message must be less than 1000 characters").optional(),
+})
 
 interface RegistrationData {
   name: string
@@ -369,14 +378,30 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email, phone, message }: RegistrationData = await req.json()
+    const requestBody = await req.json()
     
-    console.log('Generating ticket for:', { name, email, phone })
-
-    // Validation des données
-    if (!name || !email || !phone) {
-      throw new Error('Tous les champs obligatoires doivent être remplis')
+    // Validate input with Zod
+    const validationResult = registrationSchema.safeParse(requestBody)
+    
+    if (!validationResult.success) {
+      console.error("Validation failed:", validationResult.error.issues)
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid input data",
+          details: validationResult.error.issues.map(i => i.message)
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      )
     }
+
+    const { name, email, phone, message }: RegistrationData = validationResult.data
+    
+    // Log with anonymized data (no PII)
+    const emailDomain = email.split('@')[1]
+    console.log(`Processing registration for domain: ${emailDomain}`)
 
     // Générer un ID unique pour le ticket
     const ticketId = `CEFP${Date.now().toString().slice(-8)}${Math.random().toString(36).substr(2, 4).toUpperCase()}`
@@ -407,7 +432,7 @@ serve(async (req) => {
     // Générer le PDF du ticket
     const pdfBytes = generateTicketPDF({ name, email, phone, message }, ticketId)
 
-    console.log('Ticket generated successfully for:', email, 'with ID:', ticketId)
+    console.log(`Ticket generated successfully: ${ticketId}`)
 
     return new Response(pdfBytes, {
       headers: {
