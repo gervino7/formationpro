@@ -436,7 +436,7 @@ Contact: +225 01 02 03 04 05`;
                       <MessageCircle className="h-5 w-5 text-accent" />
                       <div>
                         <h4 className="font-semibold text-primary text-sm">WhatsApp VIP</h4>
-                        <p className="text-muted-foreground text-sm">+225 07 08 09 10 11</p>
+                        <p className="text-muted-foreground text-sm">+2250707 753570</p>
                       </div>
                     </div>
                   </div>
@@ -456,7 +456,7 @@ Contact: +225 01 02 03 04 05`;
                   variant="outline" 
                   size="lg" 
                   className="w-full mt-6 border-2 border-accent/30 hover:bg-accent hover:text-white transition-all duration-300"
-                  onClick={() => window.open('https://wa.me/2250708091011', '_blank')}
+                  onClick={() => window.open('https://wa.me/2250707753570', '_blank')}
                 >
                   <MessageCircle className="mr-2 h-5 w-5" />
                   Contact WhatsApp
