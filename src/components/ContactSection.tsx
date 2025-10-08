@@ -292,11 +292,18 @@ Contact: +225 01 02 03 04 05`;
                   
                   {/* Description de l'événement avec QR Code intégré */}
                   <div className="bg-gradient-to-br from-accent/5 via-primary/5 to-success/5 border-2 border-accent/20 rounded-2xl p-6 mb-6">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                      <div className="bg-accent/20 rounded-full p-3">
-                        <Calendar className="h-6 w-6 text-accent" />
+                    <div className="flex flex-col items-center justify-center mb-4">
+                      <img 
+                        src="/cefp-da-logo.png" 
+                        alt="Logo CEFP-DA" 
+                        className="h-16 w-auto mb-3"
+                      />
+                      <div className="flex items-center gap-3">
+                        <div className="bg-accent/20 rounded-full p-3">
+                          <Calendar className="h-6 w-6 text-accent" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-primary">Formationpro - Inscription Officielle</h3>
                       </div>
-                      <h3 className="text-2xl font-bold text-primary">Formationpro - Inscription Officielle</h3>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
